@@ -1,10 +1,7 @@
 package com.shopping.checkout;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class CheckoutTest {
@@ -14,49 +11,58 @@ class CheckoutTest {
 
     Checkout checkout = new Checkout();
 
-    @BeforeAll
-    public static void setUp(){
-
-    }
-
     @Test
     public void testCheckoutWithNoItems() {
         Checkout checkout = new Checkout();
-        List<String> items = new ArrayList<>();
+        List<Product> items = new ArrayList<>();
         assertEquals(0, checkout.checkout(items));
     }
 
     @Test
-    public void testCheckoutWithRightItems() {
+    public void testCheckoutWithLargeDataset() {
         double cost = checkout.checkout(setupTestData());
-        assertEquals(850, cost);
+        assertEquals(46666.75, cost);
     }
 
     @Test
     public void testCheckoutWithOneItemEach() {
-        List<String> items = new ArrayList<>();
-        items.add("Apple");
-        items.add("Orange");
+        List<Product> items = new ArrayList<>();
+        Product apple = new Product(1, "Apple", APPLE_PRICE, Offers.BOGOF);
+        Product orange = new Product(2, "Orange", ORANGE_PRICE, Offers.TFT);
+        items.add(apple);
+        items.add(orange);
         double cost = checkout.checkout(items);
         assertEquals(0.85, cost);
     }
 
     @Test
+    public void testCheckoutWithMultipleItems() {
+        List<Product> items = new ArrayList<>();
+        items.add(new Product(1, "Apple", APPLE_PRICE, Offers.BOGOF));
+        items.add(new Product(1, "Apple", APPLE_PRICE, Offers.BOGOF));
+        items.add(new Product(2, "Orange", ORANGE_PRICE, Offers.TFT));
+        items.add(new Product(2, "Orange", ORANGE_PRICE, Offers.TFT));
+        items.add(new Product(2, "Orange", ORANGE_PRICE, Offers.TFT));
+        double cost = checkout.checkout(items);
+        assertEquals(1.10, cost);
+    }
+    @Test
     public void testCheckoutWithWrongItemType() {
-        List<String> items = new ArrayList<>();
-        items.add("banana");
+        List<Product> items = new ArrayList<>();
+        items.add(new Product(3, "Banana", 0.20, null));
         assertThrows(IllegalArgumentException.class, () -> {
             checkout.checkout(items);
         });
     }
 
-    private List<String>  setupTestData(){
-        List<String> items = new ArrayList<>();
-        for(int i=0; i<1000; i++){
-            items.add("apple");
-            items.add("orange");
+    private List<Product>  setupTestData(){
+        List<Product> items = new ArrayList<>();
+        for(int i=0; i<100000; i++){
+            Product apple = new Product(1, "Apple", APPLE_PRICE, Offers.BOGOF);
+            Product orange = new Product(2, "Orange", ORANGE_PRICE, Offers.TFT);
+            items.add(apple);
+            items.add(orange);
         }
         return items;
-
     }
 }
